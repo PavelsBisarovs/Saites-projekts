@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="lv">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Uzdevumu izvēle</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #cfe0fc, #dccdfb);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+        
+        #back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #ffffff;
+            border: 2px solid #2a3f8d;
+            color: #2a3f8d;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        #back-button:hover {
+            background-color: #2a3f8d;
+            color: white;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .cards,
+        .difficulties {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        .card,
+        .difficulty {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover,
+        .difficulty:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card h2,
+        .difficulty h3 {
+            color: #2a3f8d;
+            margin-bottom: 10px;
+        }
+        
+        .card p,
+        .difficulty p,
+        #description {
+            color: #555;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #description {
+            margin-top: 30px;
+            font-size: 18px;
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        #start-button {
+            margin-top: 20px;
+        }
+        
+        #start-button button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background: #4a6fff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        #start-button button:hover {
+            background: #2a50c7;
+        }
+    </style>
+</head>
+
+<body>
+<button onclick="logout()" style="position: absolute; top: 20px; right: 20px;">Izrakstīties</button>
+
+
+    <button id="back-button" class="hidden" onclick="goBack()">← Atpakaļ</button>
+
+    <h1 id="main-title">Izvēlies uzdevumu veidu</h1>
+
+    <div id="category-section" class="cards">
+        <div class="card" onclick="selectCategory('Matemātika')">
+            <h2>Matemātika</h2>
+            <p>Risini interesantus matemātikas uzdevumus</p>
+        </div>
+        <div class="card" onclick="selectCategory('Uzmānība')">
+            <h2>Uzmānība</h2>
+            <p>Pārbaudi savu koncentrēšanos un uzmanību</p>
+        </div>
+        <div class="card" onclick="selectCategory('Ortogrāfija')">
+            <h2>Ortogrāfija</h2>
+            <p>Uzlabo rakstītprasmi un pareizrakstību</p>
+        </div>
+    </div>
+
+    <div id="difficulty-section" class="difficulties hidden">
+        <div class="difficulty" onclick="selectDifficulty('Viegla')">
+            <h3>Viegla</h3>
+            <p>Laba iesildīšanās</p>
+        </div>
+        <div class="difficulty" onclick="selectDifficulty('Vidēja')">
+            <h3>Vidēja</h3>
+            <p>Nedaudz grūtāka — labs izaicinājums</p>
+        </div>
+        <div class="difficulty" onclick="selectDifficulty('Sarežģīta')">
+            <h3>Sarežģīta</h3>
+            <p>Tikai īstiem meistariem</p>
+        </div>
+    </div>
+
+    <div id="description" class="hidden"></div>
+
+    <div id="start-button" class="hidden">
+        <button onclick="startTest()">Sākt testu</button>
+    </div>
+
+    <script>
+        let selectedCategory = "";
+        let selectedLevel = "";
+        let currentStep = "category";
+
+        function selectCategory(name) {
+            selectedCategory = name;
+            currentStep = "difficulty";
+            document.getElementById('category-section').classList.add('hidden');
+            document.getElementById('difficulty-section').classList.remove('hidden');
+            document.getElementById('description').classList.add('hidden');
+            document.getElementById('start-button').classList.add('hidden');
+            document.getElementById('main-title').textContent = `Izvēlies grūtības pakāpi kategorijai "${name}"`;
+            document.getElementById('back-button').classList.remove('hidden');
+        }
+
+        function selectDifficulty(level) {
+            selectedLevel = level;
+            currentStep = "description";
+
+            document.getElementById('difficulty-section').classList.add('hidden');
+            const desc = document.getElementById('description');
+            desc.classList.remove('hidden');
+
+            const descriptions = {
+                'Matemātika': {
+                    'Viegla': 'Vienkārši aritmētiskie piemēri: saskaitīšana, atņemšana.',
+                    'Vidēja': 'Uzdevumi ar loģiku, daļskaitļiem un vienādojumiem.',
+                    'Sarežģīta': 'Grūtas mīklas un olimpiāžu uzdevumi.'
+                },
+                'Uzmānība': {
+                    'Viegla': 'Atrodi atšķirības un vienkāršas detaļas.',
+                    'Vidēja': 'Atceries detaļas un atrodi kļūdas.',
+                    'Sarežģīta': 'Sarežģīti vizuāli un teksta slazdi.'
+                },
+                'Ortogrāfija': {
+                    'Viegla': 'Vienkārši vārdi ar uzsvaru un pareizrakstību.',
+                    'Vidēja': 'Vārdi ar mainīgām patskaņiem un noteikumiem.',
+                    'Sarežģīta': 'Izņēmumi un reti lietoti vārdi.'
+                }
+            };
+
+            desc.textContent = `Tu izvēlējies: "${selectedCategory}" — grūtība "${level}". ${descriptions[selectedCategory][level]}`;
+            document.getElementById('main-title').textContent = "Režīma apraksts";
+            document.getElementById('start-button').classList.remove('hidden');
+        }
+
+        function goBack() {
+            if (currentStep === "description") {
+                currentStep = "difficulty";
+                document.getElementById('description').classList.add('hidden');
+                document.getElementById('start-button').classList.add('hidden');
+                document.getElementById('difficulty-section').classList.remove('hidden');
+                document.getElementById('main-title').textContent = `Izvēlies grūtības pakāpi kategorijai "${selectedCategory}"`;
+            } else if (currentStep === "difficulty") {
+                currentStep = "category";
+                document.getElementById('difficulty-section').classList.add('hidden');
+                document.getElementById('category-section').classList.remove('hidden');
+                document.getElementById('main-title').textContent = "Izvēlies uzdevumu veidu";
+                document.getElementById('back-button').classList.add('hidden');
+            }
+        }
+
+        function startTest() {
+            const categoryMap = {
+                'Matemātika': 'math',
+                'Uzmānība': 'attention',
+                'Ortogrāfija': 'spelling'
+            };
+            const levelMap = {
+                'Viegla': 'easy',
+                'Vidēja': 'medium',
+                'Sarežģīta': 'hard'
+            };
+
+            const code = `${categoryMap[selectedCategory]}_${levelMap[selectedLevel]}`;
+            window.location.href = `test.html?test=${code}`;
+        }
+    </script>
+
+</body>
+
+</html>
